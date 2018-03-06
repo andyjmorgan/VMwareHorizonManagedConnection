@@ -54,7 +54,7 @@ namespace horizonObjectConnector
             VMware.Hv.Services vs =(VMware.Hv.Services) i.ExtensionData;
 
 
-
+            #region DesktopPool
 
             //List Desktop pools:
             //create desktop summary query (https://vdc-repo.vmware.com/vmwb-repository/dcr-public/e2e25628-4ed2-43fc-8bad-54fb86f3bb0f/8e4d2491-c740-4778-ac43-ba8fc0ec8175/doc/vdi.query.QueryService.html);
@@ -68,12 +68,35 @@ namespace horizonObjectConnector
             vs.QueryService.QueryService_Delete(qs.Id);
             
             //list desktop summary:
-            Console.WriteLine("Desktop Query Results: {0}", qs.Results);
+            Console.WriteLine("Desktop Query Results: {0}", qs.Results.Count());
             foreach(VMware.Hv.DesktopSummaryView dsv in qs.Results)
             {
                 Console.WriteLine("Desktop Name: {0} - Enabled: {1} - Source: {2}", dsv.DesktopSummaryData.Name, dsv.DesktopSummaryData.Enabled,dsv.DesktopSummaryData.Source);
             }
-            
+            #endregion
+
+            #region ApplicationList
+
+            //create application info query (https://vdc-repo.vmware.com/vmwb-repository/dcr-public/e2e25628-4ed2-43fc-8bad-54fb86f3bb0f/8e4d2491-c740-4778-ac43-ba8fc0ec8175/doc/vdi.query.QueryService.html);
+            VMware.Hv.QueryDefinition _ad = new VMware.Hv.QueryDefinition();
+            _ad.QueryEntityType = "ApplicationInfo";
+
+            //perform query
+            VMware.Hv.QueryResults qr = vs.QueryService.QueryService_Create(_ad);
+
+            //Delete query when we're finished with it.
+            vs.QueryService.QueryService_Delete(qr.Id);
+
+            //list application info:
+            Console.WriteLine("Application Query Results: {0}", qr.Results.Count());
+            foreach (VMware.Hv.ApplicationInfo ai in qr.Results)
+            {
+                Console.WriteLine("Application Name: {0} - Enabled: {1} - Source: {2}", ai.Data.DisplayName, ai.Data.Enabled, ai.ExecutionData.Farm);
+            }
+            #endregion
+
+
+
             //pull a list of connected VirtualCenters:
             VMware.Hv.VirtualCenterInfo[] vciList = vs.VirtualCenter.VirtualCenter_List();
             //List Virtual Centers:
