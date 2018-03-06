@@ -6,13 +6,21 @@ In order to use this code sample, first install the VMware Powercli libraries on
 add the following references to the project:
 
 c:\Program Files (x86)\VMware\Infrastructure\PowerCLI\Modules\VMware.VimAutomation.HorizonView:
+
 VMware.VimAutomation.HorizonView.Commands.dll
+
 VMware.VimAutomation.HorizonView.Impl.dll
+
 VMware.VimAutomation.HorizonView.Interop.dll
+
 VMware.VimAutomation.HorizonView.Types.dll
 
 c:\Program Files (x86)\VMware\Infrastructure\PowerCLI\Modules\VMware.VimAutomation.Sdk:
+
 VMware.VimAutomation.Sdk.Impl.dll
+
 VMware.VimAutomation.Sdk.Interop.dll
+
 VMware.VimAutomation.Sdk.Types.dll
+
 VMware.VimAutomation.Sdk.Util10.dll
