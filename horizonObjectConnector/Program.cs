@@ -96,19 +96,18 @@ namespace horizonObjectConnector
             #endregion
 
 
-
+            #region Virtual Center
             //pull a list of connected VirtualCenters:
             VMware.Hv.VirtualCenterInfo[] vciList = vs.VirtualCenter.VirtualCenter_List();
             //List Virtual Centers:
             Console.WriteLine("Connected vCenters: {0}", vciList.Length);
             foreach (VMware.Hv.VirtualCenterInfo vcInfo in vciList)
             {
-                Console.WriteLine("Name: {0}, Enabled {1}, ID {2}", vcInfo.ServerSpec.ServerName,vcInfo.Enabled, vcInfo.Id.Id);
+                Console.WriteLine("Name: {0}, Enabled {1}", vcInfo.ServerSpec.ServerName,vcInfo.Enabled);
             }
+            #endregion
 
-
-
-            
+            #region CPA
             //Check if the system is in a CPA deployment
             try
             {
@@ -142,8 +141,9 @@ namespace horizonObjectConnector
             {
                 Console.WriteLine("CPA Info not found: {0}", ex.Message);
             }
+            #endregion
 
-
+            #region Session Query
             //Get Local Sessions - does not look across pod - ping mandrew@vmware.com an email if you want more info
             //create application info query (https://vdc-repo.vmware.com/vmwb-repository/dcr-public/e2e25628-4ed2-43fc-8bad-54fb86f3bb0f/8e4d2491-c740-4778-ac43-ba8fc0ec8175/doc/vdi.query.QueryService.html);
             VMware.Hv.QueryDefinition _slsvq = new VMware.Hv.QueryDefinition();
@@ -161,13 +161,11 @@ namespace horizonObjectConnector
             {
                 Console.WriteLine("Session state: {0} - Protocol: {1} - From User: {2} - To machine: {3} - of Type: {4}", slsv.SessionData.SessionState,slsv.SessionData.SessionProtocol,slsv.NamesData.UserName,slsv.NamesData.MachineOrRDSServerDNS, slsv.SessionData.SessionType);
             }
-
+            #endregion
 
             //close connection:
-            Console.WriteLine("Closing Connection.");
+            Console.WriteLine("Closing Connection, press any key to exit.");
             VMware.VimAutomation.HorizonView.Interop.V1.ViewServerServiceFactory.HorizonViewService.ClientManager.DisconnectViewServer(i, true);
-
-
             Console.ReadLine();
             
         }
