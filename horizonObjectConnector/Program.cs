@@ -36,7 +36,7 @@ namespace horizonObjectConnector
 
             //Set access details:
             string connectionServer = GetInput("Enter Connection Server: ");
-            string username = GetInput("Enter UserName : ");
+            string username = GetInput("Enter UserName: ");
             string pass = GetInput("Enter Password: ");
             string domain = GetInput("Enter domain: ");
 
@@ -105,6 +105,63 @@ namespace horizonObjectConnector
             {
                 Console.WriteLine("Name: {0}, Enabled {1}, ID {2}", vcInfo.ServerSpec.ServerName,vcInfo.Enabled, vcInfo.Id.Id);
             }
+
+
+
+            
+            //Check if the system is in a CPA deployment
+            try
+            {
+                VMware.Hv.SiteInfo[] siteList = vs.Site.Site_List();
+                if (siteList.Count() > 0)
+                {
+                    Console.WriteLine("CPA Sites Detected: {0}", siteList.Count());
+                    foreach (VMware.Hv.SiteInfo si in siteList)
+                    {
+                        Console.WriteLine("Site Name: {0} - Pod count {1}", si.Base.DisplayName, si.Pods.Count());
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No CPA Sites Detected.");
+                }
+
+
+                VMware.Hv.PodInfo[] podList = vs.Pod.Pod_List();
+                if (podList.Count() > 0)
+                {
+                    Console.WriteLine("Pods Detected: {0}", podList.Count());
+                    foreach (VMware.Hv.PodInfo pi in podList)
+                    {
+                        Console.WriteLine("Pod Name: {0} - Connection Server Count: {1} - Site Name: {2}", pi.DisplayName, pi.Endpoints.Count(), siteList.Where(x => x.Id.Id == pi.Site.Id).First().Base.DisplayName);
+                    }
+
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("CPA Info not found: {0}", ex.Message);
+            }
+
+
+            //Get Local Sessions - does not look across pod - ping mandrew@vmware.com an email if you want more info
+            //create application info query (https://vdc-repo.vmware.com/vmwb-repository/dcr-public/e2e25628-4ed2-43fc-8bad-54fb86f3bb0f/8e4d2491-c740-4778-ac43-ba8fc0ec8175/doc/vdi.query.QueryService.html);
+            VMware.Hv.QueryDefinition _slsvq = new VMware.Hv.QueryDefinition();
+            _slsvq.QueryEntityType = "SessionLocalSummaryView";
+
+            //perform query
+            VMware.Hv.QueryResults slsvqr = vs.QueryService.QueryService_Create(_slsvq);
+
+            //Delete query when we're finished with it.
+            vs.QueryService.QueryService_Delete(slsvqr.Id);
+
+            //list application info:
+            Console.WriteLine("Session Local Query Results: {0}", slsvqr.Results.Count());
+            foreach(VMware.Hv.SessionLocalSummaryView slsv in slsvqr.Results)
+            {
+                Console.WriteLine("Session state: {0} - Protocol: {1} - From User: {2} - To machine: {3} - of Type: {4}", slsv.SessionData.SessionState,slsv.SessionData.SessionProtocol,slsv.NamesData.UserName,slsv.NamesData.MachineOrRDSServerDNS, slsv.SessionData.SessionType);
+            }
+
 
             //close connection:
             Console.WriteLine("Closing Connection.");
