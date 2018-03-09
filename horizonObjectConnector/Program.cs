@@ -53,7 +53,6 @@ namespace horizonObjectConnector
             //retrieve the needed extension data to do stuff:
             VMware.Hv.Services vs =(VMware.Hv.Services) i.ExtensionData;
 
-
             #region DesktopPool
 
             //List Desktop pools:
@@ -94,7 +93,6 @@ namespace horizonObjectConnector
                 Console.WriteLine("Application Name: {0} - Enabled: {1} - Source: {2}", ai.Data.DisplayName, ai.Data.Enabled, ai.ExecutionData.Farm);
             }
             #endregion
-
 
             #region Virtual Center
             //pull a list of connected VirtualCenters:
@@ -156,11 +154,21 @@ namespace horizonObjectConnector
             vs.QueryService.QueryService_Delete(slsvqr.Id);
 
             //list application info:
-            Console.WriteLine("Session Local Query Results: {0}", slsvqr.Results.Count());
-            foreach(VMware.Hv.SessionLocalSummaryView slsv in slsvqr.Results)
+            //if (!slsvqr.Results == null)
+            //{
+            if (slsvqr.Results != null)
             {
-                Console.WriteLine("Session state: {0} - Protocol: {1} - From User: {2} - To machine: {3} - of Type: {4}", slsv.SessionData.SessionState,slsv.SessionData.SessionProtocol,slsv.NamesData.UserName,slsv.NamesData.MachineOrRDSServerDNS, slsv.SessionData.SessionType);
+                Console.WriteLine("Session Local Query Results: {0}", slsvqr.Results.Count().ToString());
+                foreach (VMware.Hv.SessionLocalSummaryView slsv in slsvqr.Results)
+                {
+                    Console.WriteLine("Session state: {0} - Protocol: {1} - From User: {2} - To machine: {3} - of Type: {4}", slsv.SessionData.SessionState, slsv.SessionData.SessionProtocol, slsv.NamesData.UserName, slsv.NamesData.MachineOrRDSServerDNS, slsv.SessionData.SessionType);
+                }
             }
+            else
+            {
+                Console.WriteLine("No Active sessions");
+            }
+            
             #endregion
 
             //close connection:
